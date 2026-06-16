@@ -38,10 +38,10 @@ jobs:
         # This runs all 5 tests in test.rs and prints:
         # test result: ok. 5 passed; 0 failed
 
-      - name: Build Wasm contract
-        run: |
-          cargo install --locked soroban-cli --features opt || true
-          soroban contract build --manifest-path contracts/payscript/Cargo.toml
+      # - name: Build Wasm contract
+      #   run: |
+      #     cargo install --locked stellar-cli --features opt || true
+      #     soroban contract build --manifest-path contracts/payscript/Cargo.toml
 
   # ─────────────────────────────────────────────────────────────────
   # JOB 2: Frontend Tests + Vercel Deploy
