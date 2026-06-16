@@ -4,6 +4,12 @@
 
 ---
 
+## Project Description
+
+PayScript is a Soroban-powered micropayment infrastructure layer that lets developers monetize any API, dataset, or digital tool with per-call pricing as low as $0.001. Sellers embed a single PayScript widget; buyers connect a Freighter wallet and pay in XLM — no Stripe account, no PayPal fees, no geographic restrictions. Credits are stored on-chain via Soroban smart contracts and verified trustlessly on every API call. Built for independent developers and digital creators in Southeast Asia who have working products but no viable cross-border micropayment layer.
+
+---
+
 ## Problem
 
 A Cebu-based developer selling an AI dataset tool earns $0 from 400 monthly API users because there's no sub-$1 payment layer that works across borders. Stripe requires a US entity, PayPal takes 5–7%, and crypto wallets scare non-technical buyers away.
@@ -285,6 +291,40 @@ payscript/
 │       └── ci.yml
 └── README.md
 ```
+
+---
+
+## Deployed Contract
+
+| Contract | Testnet Address |
+|---|---|
+| PayScript Core | `CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C` |
+| AccessRegistry | *(deploy in progress)* |
+
+**Stellar Expert (testnet):** [https://stellar.expert/explorer/testnet/contract/CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C](https://stellar.expert/explorer/testnet/contract/CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C)
+
+> ⚠️ Replace the placeholder address above with your real contract ID after running `soroban contract deploy`
+
+---
+
+## Future Scope
+
+PayScript is designed to evolve from a developer tool into a full micropayment ecosystem primitive for Stellar.
+
+**Phase 2 — Fiat On-Ramp (Level 5–6)**
+- Anchor SEP-24 integration so Philippine buyers can fund wallets via GCash or Maya directly from the PayScript UI — removing the "get crypto first" barrier entirely
+
+**Phase 3 — x402 Agentic Payments (Level 6–7)**
+- Native x402 protocol support so AI agents can autonomously purchase API credits on behalf of users, enabling fully autonomous agent-to-API payment flows without human signing
+
+**Phase 4 — AccessRegistry Inter-Contract (Level 7)**
+- A separate on-chain AccessRegistry contract that PayScript calls for multi-tier subscription management — enabling free/pro/enterprise tiers per API key
+
+**Phase 5 — Ecosystem Expansion**
+- SDK packages for Python, Go, and Node.js so non-JS developers can integrate PayScript paywalls in one line
+- Partnership with Philippine developer communities (Devcon PH, Stellar SEA) to onboard local API creators
+- Analytics dashboard showing real-time revenue, call volume, and buyer retention per API key
+- USDC payment support alongside XLM for sellers who prefer stable denomination
 
 ---
 

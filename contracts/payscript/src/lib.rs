@@ -2,7 +2,7 @@
 
 use soroban_sdk::{
     contract, contractimpl, contracttype, symbol_short,
-    Address, Env, Symbol, Vec, Map,
+    Address, Env, Symbol,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -33,7 +33,7 @@ pub enum DataKey {
 // ─────────────────────────────────────────────────────────────────────────────
 const TOPIC_PURCHASED: Symbol = symbol_short!("purchased");
 const TOPIC_ACCESS:    Symbol = symbol_short!("access");
-const TOPIC_REGISTERED:Symbol = symbol_short!("registered");
+const TOPIC_REGISTERED:Symbol = symbol_short!("registerd");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONTRACT STRUCT
