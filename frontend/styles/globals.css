@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: #0a0a0a;
+  color: #fafafa;
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+*:focus-visible {
+  outline: 1.5px solid #fafafa;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
