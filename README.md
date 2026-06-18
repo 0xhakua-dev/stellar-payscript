@@ -1,339 +1,276 @@
 # PayScript
+ 
+> Micropayment paywalls for APIs and digital tools — built on Stellar Soroban
 
-> x402 micropayment paywalls for APIs and digital tools — built on Stellar Soroban
-
+![CI](https://github.com/0xhakua-dev/payscript/actions/workflows/ci.yml/badge.svg)
+![License](https://img.shields.io/badge/license-MIT-white.svg)
+![Network](https://img.shields.io/badge/network-Stellar%20Testnet-blue.svg)
+ 
 ---
-
+ 
 ## Project Description
-
-PayScript is a Soroban-powered micropayment infrastructure layer that lets developers monetize any API, dataset, or digital tool with per-call pricing as low as $0.001. Sellers embed a single PayScript widget; buyers connect a Freighter wallet and pay in XLM — no Stripe account, no PayPal fees, no geographic restrictions. Credits are stored on-chain via Soroban smart contracts and verified trustlessly on every API call. Built for independent developers and digital creators in Southeast Asia who have working products but no viable cross-border micropayment layer.
-
+ 
+PayScript is a small but functional micropayment layer built on Stellar Soroban. It lets developers put a per-call paywall in front of any API or digital tool. Buyers connect a Freighter wallet, pay in XLM, and receive on-chain credits that unlock API access. No Stripe account needed, no PayPal fees, no geographic restrictions. Built as a proof of concept for independent developers in Southeast Asia who have working products but no viable cross-border micropayment option.
+ 
 ---
-
+ 
 ## Problem
-
-A Cebu-based developer selling an AI dataset tool earns $0 from 400 monthly API users because there's no sub-$1 payment layer that works across borders. Stripe requires a US entity, PayPal takes 5–7%, and crypto wallets scare non-technical buyers away.
-
+ 
+A developer in Cebu selling an AI dataset tool earns $0 from hundreds of monthly API users because there's no sub-$1 payment layer that works across borders without a US bank account or entity. Stripe requires one. PayPal takes 5–7% and has poor coverage in Southeast Asia. Crypto wallets intimidate non-technical buyers.
+ 
 ## Solution
-
-PayScript lets any developer wrap their API behind a Soroban-verified micropayment wall. The buyer connects a Freighter wallet, pays XLM (as little as $0.01 per call), and receives on-chain credits — unlocking API access in under 5 seconds. Fees are under $0.001. No intermediaries. No geography restrictions.
-
-**Why Stellar is essential:** Sub-cent transaction fees make per-call micropayments economically viable for the first time. XLM settles in 3–5 seconds. Soroban smart contracts handle credit verification trustlessly, without a centralized backend holding funds.
-
+ 
+PayScript lets a developer register their API with a price per call. Buyers connect Freighter, pay XLM, and get credits stored on the Stellar Soroban contract. Each API call deducts one credit — verified on-chain, settled in under 5 seconds, for under $0.001 in fees.
+ 
+**Why Stellar:** Sub-cent fees make per-call pricing actually work. Soroban handles the credit ledger trustlessly. Freighter removes the need for buyers to understand private keys.
+ 
 ---
-
+ 
 ## Architecture
-
+ 
 ```
 Buyer (Freighter Wallet)
         │
         ▼ signs XLM payment tx
-Stellar Network (Horizon API)
+Stellar Network
         │
         ▼ payment confirmed → calls contract
 PayScript Soroban Contract (lib.rs)
-    ├── register_api()     → Developer registers API + price
-    ├── purchase_credits() → Buyer pays → credits stored on-chain
+    ├── initialize()       → Sets contract admin
+    ├── register_api()     → Developer registers API + price per call
+    ├── purchase_credits() → Buyer pays XLM → credits stored on-chain
     ├── verify_access()    → Deducts 1 credit → emits access event
     ├── get_credits()      → Frontend reads buyer balance
-    └── get_revenue()      → Developer dashboard reads earnings
+    ├── get_price()        → Frontend reads price per call
+    └── get_revenue()      → Developer reads total earnings
         │
-        ▼ access event emitted
-Next.js Frontend (Vercel)
-    └── Listens via Horizon event stream → unlocks API key in UI
+        ▼ events emitted on purchase and access
+Next.js Frontend (Netlify)
+    └── Reads contract state → shows balance → handles purchase flow
 ```
-
-### Inter-Contract Communication
-`verify_access()` is designed to be called by an external `AccessRegistry` contract, satisfying Soroban's inter-contract communication pattern. The registry contract calls `PayScriptContract::verify_access()` before granting downstream API permissions.
-
+ 
+### Inter-Contract Design
+`verify_access()` is callable by an external `AccessRegistry` contract. The pattern is implemented in the contract — the AccessRegistry deployment is planned for Level 5.
+ 
 ---
-
+ 
 ## Stellar Features Used
-
+ 
 | Feature | Usage |
 |---|---|
-| XLM transfers | Payment from buyer to contract (via Freighter) |
 | Soroban smart contracts | Credit ledger, access verification, revenue tracking |
-| Soroban events | Real-time purchase and access notifications to frontend |
-| Horizon API | Frontend polls for payment confirmation and event streaming |
-| Freighter wallet | Browser-based signing — no seed phrase exposure |
-
+| Soroban events | Payment and access notifications |
+| XLM transfers | Buyer payment via Freighter |
+| Freighter wallet | Browser-based transaction signing |
+| Stellar Expert | On-chain transaction verification |
+ 
 ---
-
-## Vision & Purpose
-
-PayScript is the monetization primitive that Stellar's developer ecosystem is missing. As x402 agentic payment rails mature, any AI agent or API tool will need a trustless, sub-cent payment layer. PayScript is that layer — starting with human buyers, expanding to autonomous agents.
-
-**Target users:** Independent developers and API creators in Southeast Asia (Philippines, Indonesia, Vietnam) earning under $2,000/month from digital tools, who have working products but no viable micropayment layer.
-
-**Level 7 roadmap:**
-- GCash/Maya anchor integration (SEP-24) — buyers top up with fiat, no crypto knowledge needed
-- x402 protocol integration for autonomous agent payments
-- AccessRegistry inter-contract for multi-API dashboards
-- Partnership with Philippine developer communities (Devcon PH, Stellar SEA)
-
+ 
+## Vision
+ 
+PayScript started as a Level 3 submission but the underlying idea is real — developers in emerging markets need a way to monetize APIs without a US bank account. The x402 protocol on Stellar makes per-call micropayments economically viable for the first time. This project explores what that infrastructure could look like at a small scale, with a path toward GCash/Maya fiat on-ramps and autonomous AI agent payments via x402.
+ 
+**Target users:** Independent developers and API creators in Southeast Asia earning under $2,000/month from digital tools who want to monetize without payment processors.
+ 
 ---
-
+ 
 ## Timeline
-
+ 
 | Phase | Scope |
 |---|---|
-| Week 1 | Soroban contract + testnet deployment |
-| Week 2 | Inter-contract calls + event streaming + Next.js scaffold |
-| Week 3 | CI/CD + tests + Freighter wallet integration |
-| Week 4 | README + demo video + Vercel deployment + submission |
-
+| Week 1 | Soroban contract written, tested, deployed to testnet |
+| Week 2 | Next.js frontend scaffolded, Freighter wallet integrated |
+| Week 3 | CI/CD pipeline, error handling, Netlify deployment |
+| Week 4 | README, demo video, submission |
+ 
 ---
-
+ 
 ## Prerequisites
-
+ 
 - **Rust:** `curl https://sh.rustup.rs -sSf | sh`
-- **Soroban CLI:** `cargo install --locked soroban-cli --features opt`
-  - Tested with: `soroban-cli 21.x`
-- **Stellar Testnet account:** [https://laboratory.stellar.org/#account-creator](https://laboratory.stellar.org/#account-creator)
-- **Node.js 18+** (for frontend)
-- **Freighter wallet:** [https://freighter.app](https://freighter.app)
-
+- **Stellar CLI:** `cargo install --locked stellar-cli`
+- **Node.js 18+**
+- **Freighter wallet browser extension:** [freighter.app](https://freighter.app)
+- **Testnet account:** [laboratory.stellar.org](https://laboratory.stellar.org/#account-creator)
 ---
-
+ 
 ## Build
-
+ 
 ```bash
-# Clone the repo
 git clone https://github.com/YOUR_USERNAME/payscript
 cd payscript/contracts/payscript
-
-# Build the Wasm contract
+ 
 soroban contract build
-
-# Output will be at:
-# target/wasm32-unknown-unknown/release/payscript.wasm
+# Output: target/wasm32-unknown-unknown/release/payscript.wasm
 ```
-
+ 
 ---
-
+ 
 ## Test
-
+ 
 ```bash
 cd contracts/payscript
-
-# Run all 5 tests
 cargo test
-
-# Expected output:
+ 
+# Expected:
 # test tests::test_happy_path_full_mvp_flow ... ok
 # test tests::test_access_denied_with_zero_credits ... ok
 # test tests::test_state_correct_after_purchase ... ok
 # test tests::test_insufficient_payment_rejected ... ok
 # test tests::test_credits_accumulate_across_purchases ... ok
-#
 # test result: ok. 5 passed; 0 failed
 ```
-
+ 
 ---
-
+ 
 ## Deploy to Testnet
-
+ 
 ```bash
-# 1. Set up your testnet identity (skip if already done)
-soroban keys generate --global deployer --network testnet
-
-# 2. Fund your testnet account
-soroban keys fund deployer --network testnet
-
-# 3. Deploy the contract
-soroban contract deploy \
+# Generate and fund a deployer identity
+stellar keys generate --global deployer --network testnet
+stellar keys fund deployer --network testnet
+ 
+# Deploy
+stellar contract deploy \
   --wasm target/wasm32-unknown-unknown/release/payscript.wasm \
   --source deployer \
   --network testnet
-
-# Output: CONTRACT_ID (save this — it goes in your .env)
-# Example: CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCN
-
-# 4. Initialize the contract with your admin address
-soroban contract invoke \
+ 
+# Initialize
+stellar contract invoke \
   --id <CONTRACT_ID> \
   --source deployer \
   --network testnet \
-  -- \
-  initialize \
+  -- initialize \
   --admin <YOUR_STELLAR_ADDRESS>
 ```
-
+ 
 ---
-
+ 
 ## Sample CLI Invocations
-
-### Register an API (developer)
+ 
+### Register an API
 ```bash
-soroban contract invoke \
-  --id <CONTRACT_ID> \
+stellar contract invoke \
+  --id CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C \
   --source deployer \
   --network testnet \
-  -- \
-  register_api \
-  --owner GDEVELOPERGXAMPLEADDRESS123456789ABCDEFGHIJKLMNOPQRST \
+  -- register_api \
+  --owner GCQU5QFOHE4DUQFVP5GZUWA5EXO2KS5VEYSYAC3MRQFRSVTAQOQWUT2X \
   --api_key MYAPI \
   --price_per_call 100000
-# 100000 stroops = 0.01 XLM per call
 ```
-
-### Purchase credits (buyer)
+ 
+### Purchase credits
 ```bash
-soroban contract invoke \
-  --id <CONTRACT_ID> \
+stellar contract invoke \
+  --id CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C \
   --source buyer-key \
   --network testnet \
-  -- \
-  purchase_credits \
-  --buyer GBUYERADDRESSGXAMPLEADDRESS123456789ABCDEFGHIJKLMNOPQRST \
+  -- purchase_credits \
+  --buyer GCQU5QFOHE4DUQFVP5GZUWA5EXO2KS5VEYSYAC3MRQFRSVTAQOQWUT2X \
   --api_key MYAPI \
   --amount_paid 1000000
-# 1000000 stroops = 0.1 XLM = 10 credits at 0.01 XLM/call
+# 1000000 stroops = 0.1 XLM = 10 credits
 ```
-
-### Check credit balance
+ 
+### Check balance
 ```bash
-soroban contract invoke \
-  --id <CONTRACT_ID> \
+stellar contract invoke \
+  --id CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C \
   --network testnet \
-  -- \
-  get_credits \
-  --buyer GBUYERADDRESSGXAMPLEADDRESS123456789ABCDEFGHIJKLMNOPQRST
+  -- get_credits \
+  --buyer GCQU5QFOHE4DUQFVP5GZUWA5EXO2KS5VEYSYAC3MRQFRSVTAQOQWUT2X
 # Output: 10
 ```
-
-### Verify API access (deducts 1 credit)
-```bash
-soroban contract invoke \
-  --id <CONTRACT_ID> \
-  --source buyer-key \
-  --network testnet \
-  -- \
-  verify_access \
-  --buyer GBUYERADDRESSGXAMPLEADDRESS123456789ABCDEFGHIJKLMNOPQRST \
-  --api_key MYAPI
-# Output: true
-```
-
-### Check API revenue (developer dashboard)
-```bash
-soroban contract invoke \
-  --id <CONTRACT_ID> \
-  --network testnet \
-  -- \
-  get_revenue \
-  --api_key MYAPI
-# Output: 1000000 (stroops)
-```
-
+ 
 ---
-
-## Frontend (Next.js)
-
+ 
+## Frontend
+ 
 ```bash
 cd frontend
 npm install
 cp .env.example .env.local
-# Add CONTRACT_ID and STELLAR_NETWORK=testnet to .env.local
-
+# Set NEXT_PUBLIC_CONTRACT_ID in .env.local
+ 
 npm run dev
-# Runs on http://localhost:3000
+# http://localhost:3000
 ```
-
-**Live demo:** [https://payscript.vercel.app](https://payscript.vercel.app)
-
+ 
+**Live demo:** [https://YOUR_NETLIFY_URL.netlify.app](https://YOUR_NETLIFY_URL.netlify.app)
+ 
 ---
-
-## Contract Addresses (Testnet)
-
-| Contract | Address |
+ 
+## Deployed Contract
+ 
+| Item | Value |
 |---|---|
-| PayScript Core | *(added after deployment)* |
-| AccessRegistry | *(added after deployment)* |
-
-**Transaction hash (first contract interaction):** *(added after deployment)*
-
+| Contract ID | `CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C` |
+| Network | Stellar Testnet |
+| Stellar Expert | [View contract](https://stellar.expert/explorer/testnet/contract/CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C) |
+| register_api tx | `f2f102200fb6bede14eaffac3cb41f76272c38153d60dbe1fd1e02249bc78536` |
+ 
 ---
-
+ 
 ## CI/CD
-
-GitHub Actions pipeline runs on every push to `main`:
-1. `cargo test` — runs all 5 Soroban contract tests
-2. `npm test` — runs frontend tests
-3. Auto-deploys to Vercel on green build
-
-See `.github/workflows/ci.yml` for the full pipeline config.
-
+ 
+GitHub Actions runs on every push to `main`:
+1. `cargo test` — runs all 5 contract tests
+2. Netlify auto-deploys frontend on merge
+See `.github/workflows/ci.yml`
+ 
 ---
-
+ 
 ## Project Structure
-
+ 
 ```
 payscript/
 ├── contracts/
 │   └── payscript/
 │       ├── src/
-│       │   ├── lib.rs      # Soroban smart contract
-│       │   └── test.rs     # 5 contract tests
+│       │   ├── lib.rs       # Soroban smart contract
+│       │   └── test.rs      # 5 contract tests
 │       └── Cargo.toml
 ├── frontend/
-│   ├── pages/
-│   │   ├── index.tsx       # Developer dashboard
-│   │   └── pay/[apiKey].tsx # Buyer payment page
 │   ├── components/
 │   │   ├── WalletConnect.tsx
 │   │   ├── CreditBalance.tsx
 │   │   └── PurchaseForm.tsx
+│   ├── hooks/
+│   │   └── useFreighter.ts
+│   ├── lib/
+│   │   └── stellar.ts
+│   ├── pages/
+│   │   ├── _app.tsx
+│   │   └── index.tsx
+│   ├── styles/
+│   │   └── globals.css
 │   └── package.json
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
 └── README.md
 ```
-
+ 
 ---
-
-## Deployed Contract
-
-| Contract | Testnet Address |
-|---|---|
-| PayScript Core | `CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C` |
-| AccessRegistry | *(deploy in progress)* |
-
-**Stellar Expert (testnet):** [https://stellar.expert/explorer/testnet/contract/CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C](https://stellar.expert/explorer/testnet/contract/CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C)
-
-> ⚠️ Replace the placeholder address above with your real contract ID after running `soroban contract deploy`
-
----
-
+ 
 ## Future Scope
-
-PayScript is designed to evolve from a developer tool into a full micropayment ecosystem primitive for Stellar.
-
-**Phase 2 — Fiat On-Ramp (Level 5–6)**
-- Anchor SEP-24 integration so Philippine buyers can fund wallets via GCash or Maya directly from the PayScript UI — removing the "get crypto first" barrier entirely
-
-**Phase 3 — x402 Agentic Payments (Level 6–7)**
-- Native x402 protocol support so AI agents can autonomously purchase API credits on behalf of users, enabling fully autonomous agent-to-API payment flows without human signing
-
-**Phase 4 — AccessRegistry Inter-Contract (Level 7)**
-- A separate on-chain AccessRegistry contract that PayScript calls for multi-tier subscription management — enabling free/pro/enterprise tiers per API key
-
-**Phase 5 — Ecosystem Expansion**
-- SDK packages for Python, Go, and Node.js so non-JS developers can integrate PayScript paywalls in one line
-- Partnership with Philippine developer communities (Devcon PH, Stellar SEA) to onboard local API creators
-- Analytics dashboard showing real-time revenue, call volume, and buyer retention per API key
-- USDC payment support alongside XLM for sellers who prefer stable denomination
-
+ 
+These are directions worth exploring in later levels — not promises.
+ 
+**Fiat on-ramp:** Anchor SEP-24 integration so Philippine buyers can fund their wallet via GCash or Maya without touching crypto directly.
+ 
+**x402 agentic payments:** Native x402 support so AI agents can autonomously purchase API credits — the protocol is new and this is a natural fit.
+ 
+**AccessRegistry contract:** A second Soroban contract handling multi-tier subscription logic (free/pro/enterprise per API key), called by the main contract via inter-contract communication.
+ 
+**SDK:** A simple npm package so developers can add a PayScript paywall in one line without touching the contract directly.
+ 
 ---
-
+ 
 ## License
-
-MIT © 2025 PayScript Contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+ 
+MIT © 2025 PayScript
+ 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
