@@ -58,14 +58,20 @@ export async function purchaseCredits(
       fee: '1000',
       networkPassphrase: NETWORK_PASSPHRASE,
     })
-      .addOperation(
-        contract.call(
-          'purchase_credits',
-          StellarSdk.nativeToScVal(buyerAddress, { type: 'address' }),
-          StellarSdk.xdr.ScVal.scvSymbol(DEFAULT_API_KEY),
-          StellarSdk.nativeToScVal(stroops, { type: 'i128' })
-        )
-      )
+    
+  .addOperation(
+  contract.call(
+    'purchase_credits',
+    StellarSdk.nativeToScVal(buyerAddress, { type: 'address' }),
+    StellarSdk.xdr.ScVal.scvSymbol(DEFAULT_API_KEY),
+    StellarSdk.xdr.ScVal.scvI128(
+      new StellarSdk.xdr.Int128Parts({
+        hi: StellarSdk.xdr.Int64.fromString('0'),
+        lo: StellarSdk.xdr.Uint64.fromString(stroops.toString()),
+      })
+    )
+  )
+)
       .setTimeout(60)
       .build()
     const simResult = await server.simulateTransaction(tx)
