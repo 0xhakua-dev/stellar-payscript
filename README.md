@@ -2,7 +2,7 @@
  
 > Micropayment paywalls for APIs and digital tools — built on Stellar Soroban
 
-![CI](https://github.com/0xhakua-dev/payscript/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/0xhakua-dev/stellar-payscript/actions/workflows/ci.yml/badge.svg?branch=main)
 ![License](https://img.shields.io/badge/license-MIT-white.svg)
 ![Network](https://img.shields.io/badge/network-Stellar%20Testnet-blue.svg)
  
@@ -97,7 +97,7 @@ PayScript started as a Level 3 submission but the underlying idea is real — de
 ## Build
  
 ```bash
-git clone https://github.com/YOUR_USERNAME/payscript
+git clone https://github.com/0xhakua-dev/stellar-payscript
 cd payscript/contracts/payscript
  
 soroban contract build
@@ -138,11 +138,11 @@ stellar contract deploy \
  
 # Initialize
 stellar contract invoke \
-  --id <CONTRACT_ID> \
+  --id CA5275K7CCSSVRP546V6AI45KZJULBHE7IGRLAWMM7WGPQH22NZ2UU6C \
   --source deployer \
   --network testnet \
   -- initialize \
-  --admin <YOUR_STELLAR_ADDRESS>
+  --admin GCQU5QFOHE4DUQFVP5GZUWA5EXO2KS5VEYSYAC3MRQFRSVTAQOQWUT2X
 ```
  
 ---
@@ -198,7 +198,7 @@ npm run dev
 # http://localhost:3000
 ```
  
-**Live demo:** [https://YOUR_NETLIFY_URL.netlify.app](https://YOUR_NETLIFY_URL.netlify.app)
+**Live demo:** [https://stellar-payscript.vercel.app/](https://stellar-payscript.vercel.app/)
  
 ---
  
