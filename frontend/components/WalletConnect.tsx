@@ -1,4 +1,5 @@
-import { Wallet, Loader2, AlertCircle } from 'lucide-react'
+import { useState } from 'react'
+import { Wallet, Loader2, AlertCircle, X } from 'lucide-react'
 import { formatAddress } from '../lib/stellar'
 import type { WalletState, WalletProvider } from '../hooks/useWallet'
 
@@ -15,6 +16,13 @@ interface Props {
 export default function WalletConnect({
   walletState, publicKey, provider, error, connectFreighter, connectAlbedo, disconnect
 }: Props) {
+  const [modalOpen, setModalOpen] = useState(false)
+
+  const handleConnect = (fn: () => void) => {
+    fn()
+    setModalOpen(false)
+  }
+
   return (
     <div className="border border-white/10 rounded-xl p-5">
       <div className="flex items-center gap-2 mb-4">
@@ -37,29 +45,16 @@ export default function WalletConnect({
         </div>
       ) : (
         <div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={connectFreighter}
-              disabled={walletState === 'connecting'}
-              className="flex items-center justify-center gap-2 bg-white text-black text-sm font-medium py-3 rounded-lg hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {walletState === 'connecting'
-                ? <Loader2 className="w-4 h-4 animate-spin" />
-                : <><Wallet className="w-4 h-4" /> Freighter</>
-              }
-            </button>
-
-            <button
-              onClick={connectAlbedo}
-              disabled={walletState === 'connecting'}
-              className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white text-sm font-medium py-3 rounded-lg hover:bg-white/10 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {walletState === 'connecting'
-                ? <Loader2 className="w-4 h-4 animate-spin" />
-                : <><Wallet className="w-4 h-4" /> Albedo</>
-              }
-            </button>
-          </div>
+          <button
+            onClick={() => setModalOpen(true)}
+            disabled={walletState === 'connecting'}
+            className="w-full flex items-center justify-center gap-2 bg-white text-black text-sm font-medium py-3 rounded-lg hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {walletState === 'connecting'
+              ? <><Loader2 className="w-4 h-4 animate-spin" /> Connecting...</>
+              : <><Wallet className="w-4 h-4" /> Connect Wallet</>
+            }
+          </button>
 
           {walletState === 'not_installed' && (
             <p className="mt-3 flex items-center gap-2 text-xs text-amber-400">
@@ -77,6 +72,66 @@ export default function WalletConnect({
               {error}
             </p>
           )}
+        </div>
+      )}
+
+      {/* Wallet picker modal */}
+      {modalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+          onClick={() => setModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-[#0a0a0a] border border-white/10 rounded-xl p-5 animate-fade-in"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-5">
+              <span className="text-sm font-medium">Connect a wallet</span>
+              <button
+                onClick={() => setModalOpen(false)}
+                className="text-white/30 hover:text-white/60 transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                onClick={() => handleConnect(connectFreighter)}
+                className="w-full flex items-center justify-between gap-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg px-4 py-3 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                    <Wallet className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-medium">Freighter</div>
+                    <div className="text-xs text-white/40">Browser extension</div>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleConnect(connectAlbedo)}
+                className="w-full flex items-center justify-between gap-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg px-4 py-3 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                    <Wallet className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-medium">Albedo</div>
+                    <div className="text-xs text-white/40">Web-based, no install</div>
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            <p className="text-xs text-white/20 mt-4 text-center font-mono">
+              Stellar Testnet only
+            </p>
+          </div>
         </div>
       )}
     </div>
