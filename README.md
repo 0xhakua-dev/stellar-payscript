@@ -248,7 +248,8 @@ stellar-payscript/
 │   ├── hooks/
 │   │   └── useFreighter.ts
 │   ├── lib/
-│   │   └── stellar.ts
+│   │   ├── stellar.ts
+│   │   └── albedo.ts
 │   ├── pages/
 │   │   ├── _app.tsx
 │   │   └── index.tsx
