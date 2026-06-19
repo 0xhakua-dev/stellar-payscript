@@ -8,7 +8,7 @@ import PurchaseForm from '../components/PurchaseForm'
 import { CONTRACT_ID, explorerContractUrl } from '../lib/stellar'
 
 export default function Home() {
- const wallet = useWallet()
+  const wallet = useWallet()
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   return (
@@ -54,26 +54,28 @@ export default function Home() {
           <div className="space-y-4">
 
             <WalletConnect
-              walletState={freighter.walletState}
-              publicKey={freighter.publicKey}
-              error={freighter.error}
-              connect={freighter.connect}
-              disconnect={freighter.disconnect}
+              walletState={wallet.walletState}
+              publicKey={wallet.publicKey}
+              provider={wallet.provider}
+              error={wallet.error}
+              connectFreighter={wallet.connectFreighter}
+              connectAlbedo={wallet.connectAlbedo}
+              disconnect={wallet.disconnect}
             />
 
-            {freighter.isConnected && freighter.publicKey && (
+            {wallet.isConnected && wallet.publicKey && (
               <>
-                <CreditBalance publicKey={freighter.publicKey} refreshTrigger={refreshTrigger} />
-                <PurchaseForm publicKey={freighter.publicKey} onSuccess={() => setRefreshTrigger(n => n + 1)} />
+                <CreditBalance publicKey={wallet.publicKey} refreshTrigger={refreshTrigger} />
+                <PurchaseForm publicKey={wallet.publicKey} onSuccess={() => setRefreshTrigger(n => n + 1)} />
               </>
             )}
 
-            {!freighter.isConnected && (
+            {!wallet.isConnected && (
               <div className="border border-white/10 rounded-xl p-5">
                 <div className="text-xs text-white/30 font-mono uppercase tracking-widest mb-4">How it works</div>
                 <div className="space-y-4">
                   {[
-                    { n: '1', title: 'Connect wallet', desc: 'Freighter signs transactions, no seed phrase shared' },
+                    { n: '1', title: 'Connect wallet', desc: 'Use Freighter or Albedo — no seed phrase shared' },
                     { n: '2', title: 'Buy credits', desc: 'Pay XLM and credits are stored on Stellar Soroban' },
                     { n: '3', title: 'Access API', desc: 'Each call deducts 1 credit, verified on-chain in 3s' },
                   ].map(step => (
