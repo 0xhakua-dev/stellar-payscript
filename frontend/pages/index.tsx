@@ -1,14 +1,14 @@
 import Head from 'next/head'
 import { useState } from 'react'
 import { Zap } from 'lucide-react'
-import { useFreighter } from '../hooks/useFreighter'
+import { useWallet } from '../hooks/useWallet'
 import WalletConnect from '../components/WalletConnect'
 import CreditBalance from '../components/CreditBalance'
 import PurchaseForm from '../components/PurchaseForm'
 import { CONTRACT_ID, explorerContractUrl } from '../lib/stellar'
 
 export default function Home() {
-  const freighter = useFreighter()
+ const wallet = useWallet()
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   return (

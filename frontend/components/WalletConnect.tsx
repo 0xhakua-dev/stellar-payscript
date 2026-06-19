@@ -1,17 +1,20 @@
-
 import { Wallet, Loader2, AlertCircle } from 'lucide-react'
 import { formatAddress } from '../lib/stellar'
-import type { WalletState } from '../hooks/useFreighter'
+import type { WalletState, WalletProvider } from '../hooks/useWallet'
 
 interface Props {
   walletState: WalletState
   publicKey: string | null
+  provider: WalletProvider | null
   error: string | null
-  connect: () => void
+  connectFreighter: () => void
+  connectAlbedo: () => void
   disconnect: () => void
 }
 
-export default function WalletConnect({ walletState, publicKey, error, connect, disconnect }: Props) {
+export default function WalletConnect({
+  walletState, publicKey, provider, error, connectFreighter, connectAlbedo, disconnect
+}: Props) {
   return (
     <div className="border border-white/10 rounded-xl p-5">
       <div className="flex items-center gap-2 mb-4">
@@ -24,7 +27,9 @@ export default function WalletConnect({ walletState, publicKey, error, connect, 
           <div className="flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
             <span className="font-mono text-sm">{formatAddress(publicKey)}</span>
-            <span className="text-xs font-mono px-2 py-0.5 rounded border border-emerald-400/20 text-emerald-400">Testnet</span>
+            <span className="text-xs font-mono px-2 py-0.5 rounded border border-emerald-400/20 text-emerald-400">
+              {provider === 'albedo' ? 'Albedo' : 'Freighter'} · Testnet
+            </span>
           </div>
           <button onClick={disconnect} className="text-xs text-white/30 hover:text-white/60 transition-colors font-mono">
             disconnect
@@ -32,16 +37,29 @@ export default function WalletConnect({ walletState, publicKey, error, connect, 
         </div>
       ) : (
         <div>
-          <button
-            onClick={connect}
-            disabled={walletState === 'connecting'}
-            className="w-full flex items-center justify-center gap-2 bg-white text-black text-sm font-medium py-3 rounded-lg hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {walletState === 'connecting'
-              ? <><Loader2 className="w-4 h-4 animate-spin" /> Connecting...</>
-              : <><Wallet className="w-4 h-4" /> Connect Freighter</>
-            }
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={connectFreighter}
+              disabled={walletState === 'connecting'}
+              className="flex items-center justify-center gap-2 bg-white text-black text-sm font-medium py-3 rounded-lg hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {walletState === 'connecting'
+                ? <Loader2 className="w-4 h-4 animate-spin" />
+                : <><Wallet className="w-4 h-4" /> Freighter</>
+              }
+            </button>
+
+            <button
+              onClick={connectAlbedo}
+              disabled={walletState === 'connecting'}
+              className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white text-sm font-medium py-3 rounded-lg hover:bg-white/10 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {walletState === 'connecting'
+                ? <Loader2 className="w-4 h-4 animate-spin" />
+                : <><Wallet className="w-4 h-4" /> Albedo</>
+              }
+            </button>
+          </div>
 
           {walletState === 'not_installed' && (
             <p className="mt-3 flex items-center gap-2 text-xs text-amber-400">
