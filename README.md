@@ -54,6 +54,14 @@ PayScript lets a developer register their API with a price per call. Buyers conn
 ### Transaction on Stellar Expert
 ![Transaction on Explorer](./screenshots/stellar-expert.png)
 
+### CI/CD Pipeline Passing
+![CI Pipeline](./screenshots/ci-pipeline-passing.png)
+
+### Test Output — 5 Passing Tests
+![Test Output](./screenshots/test-output-5-passing.png)
+
+### Mobile Responsive UI
+![Mobile Responsive](./screenshots/mobile-responsive.png)
 ---
 
 ## ✨ Features
