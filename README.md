@@ -246,10 +246,10 @@ stellar-payscript/
 │   │   ├── CreditBalance.tsx
 │   │   └── PurchaseForm.tsx
 │   ├── hooks/
-│   │   └── useFreighter.ts
+│   │   └── useWallet.ts
 │   ├── lib/
-│   │   ├── stellar.ts
-│   │   └── albedo.ts
+│   │   ├── albedo.ts
+│   │   └── stellar.ts
 │   ├── pages/
 │   │   ├── _app.tsx
 │   │   └── index.tsx
